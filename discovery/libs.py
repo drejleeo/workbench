@@ -1,0 +1,4 @@
+libs = [
+    'this',
+    'setuptools',
+]
