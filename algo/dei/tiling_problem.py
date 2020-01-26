@@ -1,68 +1,115 @@
-from utils import print_matrix
-import numpy as np
 import random
+
+class Point(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return f'P({self.x}, {self.y})'
+
 n = 3
 dim = 2 ** n
 
-tile_placing = {
-    
-}
+
+def generate_subsquare_designed_by_2_points(board, A, B):
+    for i in range(A.x, B.x):
+        for j in range(A.y, B.y):
+            yield board[i][j]
 
 
-def can_be_placed(board, tile):
-    pass
+def get_marked_quarter(board, quarters):
+    for k, v in quarters:
+        for element in generate_subsquare_designed_by_2_points(
+            board, v.get('point1'), v.get('point2')
+        ):
+            if element != 0:
+                return k
 
 
-def get_marked_quarter(quarters):
-    for key in quarters.keys():
-        if sum(sum(row) for row in quarters[key]) == 1:
-            return key
-
-
-def place_tile(already_marked, tile_number, board, half):
+def place_tile(board, already_marked, tile_number, half, size):
     spots = {
-        'wn': board[half-1][half-1],
-        'ne': board[half-1][ half ],
-        'es': board[ half ][half-1],
-        'sw': board[ half ][ half ],
+        'wn': (half - 1, half - 1),
+        'ne': (half - 1, size - half),
+        'es': (size - half, half - 1),
+        'sw': (half, half),
     }
-    for key in spots.keys() - already_marked:
-        spots[key] = tile_number
+    not_marked_quarts = list(spots.keys() - {already_marked})
+    for key in not_marked_quarts:
+        x, y = spots[key]
+        board[x][y] = tile_number
 
 
 def solve_tiling(board, size, tile_number=1):
+    """
+    Calculate quarters by starting and ending points:
 
-    if size == 2:
-        return board
+    matrix = [
+        A, -, -, -, C, -, -, -,
+        -, -, -, -, -, -, -, -,
+        -, -, -, -, -, -, -, -,
+        -, -, -, B, -, -, -, D,
+        E, -, -, -, G, -, -, -,
+        -, -, -, -, -, -, -, -,
+        -, -, -, -, -, -, -, -,
+        -, -, -, F, -, -, -, H,
+    ]
 
-    half = size // 2
-    quarters = {
-        'wn': [row[0:half] for row in board[0:half]],
-        'ne': [row[half:size] for row in board[0:half]],
-        'es': [row[0:half] for row in board[half:size]],
-        'sw': [row[half:size] for row in board[half:size]],
-    }
+    Quarters are being iterated by iteration over the
+    subsquares designed by the pairs of points
+    (A, B), (C, D), (E, F), (G, H)
 
-    mark = get_marked_quarter(quarters)
-    place_tile(
-        already_marked=mark,
-        tile_number=tile_number,
-        board=board,
-        half=half,
-    )
+    :param board: The board to place tiles on.
+    :param size: n size of the n*n board.
+    :param tile_number: The starting number for tile count.
+    :return:
+    """
+    print('\niteration')
+    pmatrix(board)
+    print('end\n')
 
-    for quart in quarters:
-        solve_tiling(quart, half, tile_number + 1)
+    if size > 2:
+        half = size // 2
+
+        # Quarters defined by 2 points: top-left, bottom-right
+        quarters = {
+            'wn': {
+                'point1': Point(0, 0),
+                'point2': Point(half - 1, half - 1),
+            },
+            'ne': {
+                'point1': Point(0, half),
+                'point2': Point(half - 1, size - 1)
+            },
+            'es': {
+                'point1': Point(half, 0),
+                'point2': Point(size - 1, half - 1)
+            },
+            'sw': {
+                'point1': Point(half, half),
+                'point2': Point(size - 1, size - 1),
+            }
+        }
+        mark = get_marked_quarter(board, )
+        place_tile(board, mark, tile_number, half, size)
+
+        for q in quarters.items():
+            solve_tiling(board, half, tile_number + 1)
 
 
+def pmatrix(mat):
+    for row in mat:
+        print(row)
 
 
 if __name__ == '__main__':
     board = [[0] * dim for _ in range(dim)]
     board[random.randint(0, dim - 1)][random.randint(0, dim - 1)] = 1
-    result = solve_tiling(
+
+    solve_tiling(
         board=board,
         size=dim,
     )
 
-    print_matrix(board)
+    print('Result is as follows: ')
+    pmatrix(board)
