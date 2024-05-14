@@ -1,0 +1,10 @@
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+Django = { version = "5.0.4", python = ">=3.10" }
+django-extensions = { version = "3.2.3", python = ">=3.6" }
+djangorestframework = { version = "3.15.1", python = ">=3.6" }
+drf-yasg = { version = "1.21.7", python = ">=3.6" }
+requests = { version = "2.31.0", python = ">=3.7" }
+xmltodict = { version = "0.13.0", python = ">=3.4" }

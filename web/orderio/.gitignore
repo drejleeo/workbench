@@ -1,0 +1,20 @@
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Basics
+*.py[cod]
+__pycache__
+
+# Pycharm
+.idea/*
+
+# virtual environments
+.env*
+
+# sqlite
+db.sqlite3
+
+# statics
+static/
